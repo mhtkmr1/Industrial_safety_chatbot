@@ -342,7 +342,7 @@ def preprecess_chatbot(sentence,vector):
 
 def prepare_trans_df(train_df,text,labels):
   file_add = 'https://raw.githubusercontent.com/mhtkmr1/Industrial_safety_chatbot/main/Google_translated_data.csv'
-  google_translated = pd.read_csv('file_add')
+  google_translated = pd.read_csv(file_add)
   google_translated.drop_duplicates(subset=[text],inplace=True, ignore_index=True) # remove duplicate rows
   google_translated.set_index(text,inplace=True)
 
