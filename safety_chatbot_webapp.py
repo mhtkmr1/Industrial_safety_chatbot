@@ -11,7 +11,7 @@ from nltk.stem import PorterStemmer, WordNetLemmatizer
 nltk.download('stopwords')
 nltk.download('wordnet')
 nltk.download('punkt')
-#nltk.download('averaged_perceptron_tagger')
+nltk.download('averaged_perceptron_tagger')
 
 # Ignore the warnings
 import warnings
