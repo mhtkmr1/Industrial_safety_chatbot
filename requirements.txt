@@ -7,3 +7,4 @@ nltk==3.2.5
 xgboost==0.90
 tensorflow==2.7.0
 nlpaug==1.1.8
+torch
