@@ -659,6 +659,7 @@ def main():
                           del st.session_state[keys]
                       #joblib.dump(st.session_state.current_model,'final_model.pkl')
                       st.session_state.model_saved = st.session_state.saved_results.loc[model_to_be_saved,'saved_models']
+                      st.session_state.modl = model_to_be_saved
                       st.session_state.is_model_saved = 'yes'
                       #save_model(st.session_state.current_model)
                     if 'is_model_saved' in st.session_state:
