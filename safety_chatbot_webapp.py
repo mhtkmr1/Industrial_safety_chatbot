@@ -394,11 +394,12 @@ def main():
   if uploaded_file is not None:
     #if 'df' in st.session_state: del st.session_state[df] # Remove df if already exists, generally in case of new file uploaded
     st.session_state.df = pd.read_csv(uploaded_file)
+    with col13:
+      st.write('FILENAME: ', uploaded_file.name)
+      st.write('FILETYPE: ', uploaded_file.type)
   if 'df' in st.session_state:
     with col13:
       st.success('File uploaded successfully')
-      st.write('FILENAME: ', uploaded_file.name)
-      st.write('FILETYPE: ', uploaded_file.type)
       st.write('**Shape of original data: **',st.session_state.df.shape)
       #st.dataframe(st.session_state.df.head())
     col11_, col12_ = st.columns([1,5])
