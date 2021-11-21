@@ -588,8 +588,8 @@ def main():
                       with col101:
                         run_chatbot = st.button(label = 'Load model and Run the chatbot',key = 'run_chatbot')
                       if run_chatbot:
-                          #st.session_state.final_model = load_model()
-			  st.session_state.final_model = st.session_state.current_model
+                        #st.session_state.final_model = load_model()
+			st.session_state.final_model = st.session_state.current_model
                       if 'run_chatbot' in st.session_state:
                         with col102:
                           description = st.text_area('Please enter the Accident description here', value='default_value',
