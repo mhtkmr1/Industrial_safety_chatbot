@@ -639,7 +639,7 @@ def main():
                   if 'current_model' in st.session_state:
                     with col83:
                       st.success('Performance metrices of the models are calculated: ')
-                      st.dataframe(st.session_state.saved_results[st.session_state.metrics])
+                      st.dataframe(st.session_state.saved_results.loc[:,st.session_state.metrics])
                       st.write('**Current active model: **',st.session_state.modl)
                       #st.metric('Weighted F1 score of the current active model: ',st.session_state.saved_results.loc[st.session_state.current_model,'Weighted F1'])
                   st.write("_" * 30)
