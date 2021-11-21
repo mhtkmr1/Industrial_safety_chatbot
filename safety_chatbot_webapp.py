@@ -568,6 +568,8 @@ def main():
               with col53:
                 st.success('Data augmentation is complete') 
                 st.write('**Shape of augmented train data: **',st.session_state.aug_train_text.shape)
+                st.write('**Label distribution before train-test split:**')
+                st.dataframe(st.session_state.y_train.value_counts())
                 #st.write('-------------- AUGMENTATION CODE NOT INCLUDED YET ---------------')
             st.write("_" * 30)
 
