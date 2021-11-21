@@ -340,6 +340,56 @@ def preprecess_chatbot(sentence,vector):
   output = vector.transform([sentence1])
   return output
 
+def prepare_trans_df(train_df,text,labels):
+  file_add = 'https://raw.githubusercontent.com/mhtkmr1/Industrial_safety_chatbot/main/Google_translated_data.csv'
+  google_translated = pd.read_csv('file_add')
+  google_translated.drop_duplicates(subset=[text],inplace=True, ignore_index=True) # remove duplicate rows
+  google_translated.set_index(text,inplace=True)
+
+  train_df = train_df.set_index(text)
+  clms = ['es', 'hi', 'it', 'Id', 'ja', 'he','ga', 'de', 'fr']
+  dtf = pd.concat([train_df, google_translated.loc[train_df.index,clms]],axis=1)
+  dtf.reset_index(inplace=True)
+
+  dtf1 = dtf[text,labels]].copy(deep=True)
+  for lang in clms:
+    new_df = pd.DataFrame()
+    new_df['Description'] = dtf[lang]
+    new_df[labels] = dtf[labels]
+    dtf1 = pd.concat([dtf1, new_df],ignore_index=True)
+  return dtf1
+
+def syn_augmentor(text_df,text,labels):
+  import nlpaug
+  import nlpaug.augmenter.char as nac
+  import nlpaug.augmenter.word as naw
+  import nlpaug.augmenter.sentence as nas
+  values = text_df[labels].value_counts().values
+  levels = text_df[labels].value_counts().index
+  augmented_sen = []
+  level = []
+  for i in range(1,len(levels)):
+    data = text_df[text_df[labels] == levels[i]]
+    for dt in data[text]:
+      sent = dt
+      for k in range(values[0]//values[i]):
+        if len(sent) < 10:
+          wrd_aug = naw.SynonymAug(aug_min=3)
+          sent = wrd_aug.augment(sent)
+        elif len(sent) > 10 and len(sent) < 25:
+          wrd_aug = naw.SynonymAug(aug_min=5)
+          sent = wrd_aug.augment(sent)
+        else:
+          wrd_aug = naw.SynonymAug(aug_min=8)
+          sent = wrd_aug.augment(sent)
+
+        augmented_sen.append(sent)
+        level.append(levels[i])
+
+  desc = pd.concat([text['Description'],pd.Series(augmented_sen)])
+  acc_lvl = pd.concat([text['Accident Level'], pd.Series(level)])
+  aug_df = pd.concat([desc,acc_lvl],axis=1)
+  return aug_df
 # @st.cache(suppress_st_warning=True,allow_output_mutation=True)
 #def load_model():
   #final_model = joblib.load('final_model.pkl')
@@ -358,7 +408,7 @@ def main():
                   </style>
                   """
   st.markdown(hide_menu_style, unsafe_allow_html = True)
-  st.title('CAPSTONE PROJECT')
+  st.title('INDUSTRIAL SAFETY CHATBOT')
   #separate into 3 columns
   st.session_state.col_size = [1,2,3]
   col11, col12, col13 = st.columns(st.session_state.col_size)
@@ -449,7 +499,7 @@ def main():
         if 'df1' in st.session_state:
           col41, col42, col43,col44 = st.columns([1,2,1.5,1.5])
           with col41:
-            st.write("**Step-4: Train - Test split and One hot encoding of labels**")
+            st.write("**Step-4: Train - Test split and encoding of labels**")
           with col42:
             test_split = st.slider('Select percentage of test data for test-train split?', min_value=5, max_value=50,value=20, step=5, key = 'test_split')
           #test_split = st.number_input('Write the percentage of test data for test-train split? (example: write "20" for 20%)')
@@ -477,13 +527,12 @@ def main():
               st.session_state.y_train, st.session_state.y_test, st.session_state.lb =encode_labels(st.session_state.train_label,st.session_state.test_label)
           if 'y_train' in st.session_state:
             with col44:
-              st.success('Train - Test split is complete')  
+              st.success('Train - Test split is complete')
               st.write('**Shape of train data after stratified split: **',st.session_state.train_text.shape)
               st.write('**Shape of test data after split: **',st.session_state.test_text.shape)
               st.write('**Label distribution of test data after split:**')
               st.dataframe(st.session_state.test_label.value_counts())
           st.write("_" * 30)
-
 
           if 'y_train' in st.session_state:
             col51, col52, col53 = st.columns([1,2,3])
@@ -495,13 +544,27 @@ def main():
               for keys in ['train_text1']: # remove all keys of importance to next step
                 if keys in st.session_state:
                   del st.session_state[keys]
-              # perform the Augmentation
-              st.session_state.aug_train_text = st.session_state.train_text
+              # perform the Augmentation and avoid recalculation during program reruns
+              if 'aug_train_text' not in st.session_state:
+                with st.spinner('Augmentation in progress, please wait...'):
+                  a = prepare_trans_df(pd.concat([st.session_state.train_text, st.session_state.train_label], axis=1),st.session_state.text,st.session_state.labels)
+                  b = syn_augmentor(pd.concat([st.session_state.train_text, st.session_state.train_label], axis=1),st.session_state.text,st.session_state.labels)
+                  c = pd.concat([a,b],ignore_index=True)
+                  c = data_clean1(c)
+                  # check augmentation sanity and remove data that doesn't make sense, example: sentences that have reduced a lot
+                  # Remove sentences that have become shorter than 15
+                  c['sent_len'] = [len(x.split()) for x in c[st.session_state.text].tolist()]
+                  c = c[c['sent_len']>15]
+                  c.drop(['sent_len'], axis=1, inplace = True)
+                  c.reset_index(drop=True, inplace=True)
+                  st.session_state.aug_train_text = c[st.session_state.text].copy(deep=True)
+                  st.session_state.aug_train_labels = c[st.session_state.labels].copy(deep=True)
+                  st.session_state.y_train = lb.transform(st.session_state.aug_train_labels)
             if 'aug_train_text' in st.session_state:
               with col53:
                 st.success('Data augmentation is complete') 
                 st.write('**Shape of augmented train data: **',st.session_state.aug_train_text.shape)
-                st.write('-------------- AUGMENTATION CODE NOT INCLUDED YET ---------------')
+                #st.write('-------------- AUGMENTATION CODE NOT INCLUDED YET ---------------')
             st.write("_" * 30)
 
             if 'aug_train_text' in st.session_state:
