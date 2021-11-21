@@ -619,8 +619,8 @@ def main():
                     st.write("**Step-8: Training and testing of models **")
                   # Create an empty dataframe to save all the results
                   if 'saved_results' not in st.session_state:
-                    metrics = ['Train accuracy','Test accuracy','Weighted F1','F1 scores','Precision','Recall','Run time']
-                    st.session_state.saved_results = pd.DataFrame(columns=metrics)
+                    st.session_state.metrics = ['Train accuracy','Test accuracy','Weighted F1','F1 scores','Precision','Recall','Run time']
+                    st.session_state.saved_results = pd.DataFrame(columns=st.session_state.metrics)
                   # List of all the models that can be tested
                   st.session_state.model_func = {'Random forest': r_f, 'Logistic Regression':LogR,'Gaussian NB':GNB,'KNeighbors Classifier':KNC,'SVC':SVC,'Decision Tree Classifier':DTC ,'Neural Network': n_n, 'LSTM':lstm,'bi-LSTM':bilstm}
                   model_list = list(st.session_state.model_func.keys())
@@ -639,7 +639,7 @@ def main():
                   if 'current_model' in st.session_state:
                     with col83:
                       st.success('Performance metrices of the models are calculated: ')
-                      st.dataframe(st.session_state.saved_results)
+                      st.dataframe(st.session_state.saved_results[st.session_state.metrics])
                       st.write('**Current active model: **',st.session_state.modl)
                       #st.metric('Weighted F1 score of the current active model: ',st.session_state.saved_results.loc[st.session_state.current_model,'Weighted F1'])
                   st.write("_" * 30)
