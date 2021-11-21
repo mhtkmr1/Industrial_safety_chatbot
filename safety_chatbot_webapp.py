@@ -386,8 +386,8 @@ def syn_augmentor(text_df,text,labels):
         augmented_sen.append(sent)
         level.append(levels[i])
 
-  desc = pd.concat([text['Description'],pd.Series(augmented_sen)])
-  acc_lvl = pd.concat([text['Accident Level'], pd.Series(level)])
+  desc = pd.concat([text_df[text],pd.Series(augmented_sen)])
+  acc_lvl = pd.concat([text_df[labels], pd.Series(level)])
   aug_df = pd.concat([desc,acc_lvl],axis=1)
   return aug_df
 # @st.cache(suppress_st_warning=True,allow_output_mutation=True)
