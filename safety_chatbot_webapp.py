@@ -395,9 +395,11 @@ def main():
       st.session_state.df = pd.read_csv(uploaded_file)
       st.write('**Shape of original data: **',st.session_state.df.shape)
       #st.dataframe(st.session_state.df.head())
-    st.write('preview of the uploaded dataframe')
-    st.dataframe(st.session_state.df.head())
-    st.write("_" * 30)
+    col11_, col12_ = st.columns([1,5])
+    with col12_:
+      st.write('**Preview of the uploaded dataframe**')
+      st.dataframe(st.session_state.df.head())
+      st.write("_" * 30)
     
     if 'df' in st.session_state:
       col21, col22, col23, col24 = st.columns([1,1,1,3])
