@@ -621,6 +621,7 @@ def main():
                   if 'saved_results' not in st.session_state:
                     st.session_state.metrics = ['Train accuracy','Test accuracy','Weighted F1','F1 scores','Precision','Recall','Run time']
                     st.session_state.saved_results = pd.DataFrame(columns=st.session_state.metrics)
+                    st.session_state.saved_results['saved_models'] = np.nan
                   # List of all the models that can be tested
                   st.session_state.model_func = {'Random forest': r_f, 'Logistic Regression':LogR,'Gaussian NB':GNB,'KNeighbors Classifier':KNC,'SVC':SVC,'Decision Tree Classifier':DTC ,'Neural Network': n_n, 'LSTM':lstm,'bi-LSTM':bilstm}
                   model_list = list(st.session_state.model_func.keys())
@@ -635,7 +636,8 @@ def main():
                       with col82:
                         with st.spinner('Model Training in progress, please wait...'):
                           results, temp_model = st.session_state.model_func.get(st.session_state.modl)(st.session_state.x_train, st.session_state.x_test, st.session_state.y_train, st.session_state.y_test)
-                      st.session_state.saved_results.loc[st.session_state.modl], st.session_state.current_model = results, temp_model
+                      st.session_state.saved_results.loc[st.session_state.modl,st.session_state.metrics], st.session_state.current_model = results, temp_model
+                      st.session_state.saved_results.loc[st.session_state.modl,'saved_models'] = st.session_state.current_model
                   if 'current_model' in st.session_state:
                     with col83:
                       st.success('Performance metrices of the models are calculated: ')
@@ -649,15 +651,17 @@ def main():
                     with col91:
                       st.write("**Step-9: Pickling of the current active model **")
                     with col92:
+                      model_to_be_saved = st.radio('Select one of the models to save and use later',st.session_state.saved_results.index,key='model_to_be_saved')
                       pickle_model = st.button(label = 'Pickle/Save the current active model', key = 'pickle_model')
                     if pickle_model:
                       for keys in ['run_chatbot']: # remove all keys of importance to next step
                         if keys in st.session_state:
                           del st.session_state[keys]
                       #joblib.dump(st.session_state.current_model,'final_model.pkl')
-                      st.session_state.model_saved = 'yes'
+                      st.session_state.model_saved = st.session_state.saved_results.loc[model_to_be_saved,'saved_models']
+                      st.session_state.is_model_saved = 'yes'
                       #save_model(st.session_state.current_model)
-                    if 'model_saved' in st.session_state:
+                    if 'is_model_saved' in st.session_state:
                       with col93:
                         st.success('Model is successfully saved')
                         st.write('**Pickled model: **',st.session_state.modl)
@@ -670,7 +674,7 @@ def main():
                       with col101:
                         run_chatbot = st.button(label = 'Load model and Run the chatbot',key = 'run_chatbot')
                       if run_chatbot:
-                          st.session_state.final_model = st.session_state.current_model #load_model()
+                          st.session_state.final_model = st.session_state.model_saved #load_model()
 
                       if 'run_chatbot' in st.session_state:
                         with col102:
