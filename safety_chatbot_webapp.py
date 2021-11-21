@@ -388,11 +388,11 @@ def main():
   with col13:
     st.header("OUTPUT AND STATUS")
   
-  if uploaded_file1 is not None and uploaded_file is None:
+  if uploaded_file1 and not uploaded_file:
     st.write('value of uploaded_file1 parameter is: ',uploaded_file1)
     file_url='https://raw.githubusercontent.com/mhtkmr1/Industrial_safety_chatbot/main/Data%20Set%20-%20industrial_safety_and_health_database_with_accidents_description.csv'
     st.session_state.df = pd.read_csv(file_url)
-  if uploaded_file is not None:
+  if uploaded_file:
     #if 'df' in st.session_state: del st.session_state[df] # Remove df if already exists, generally in case of new file uploaded
     st.session_state.df = pd.read_csv(uploaded_file)
     with col13:
