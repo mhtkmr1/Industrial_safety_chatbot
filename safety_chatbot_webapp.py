@@ -629,7 +629,7 @@ def main():
                     modl = st.selectbox('Select the model',options = pd.Series(model_list),key = 'modl')
                     train_model = st.button(label = 'Train the model', key = 'train_model')
                   if train_model:
-                    for keys in ['model_saved']: # remove all keys of importance to next step
+                    for keys in ['model_saved','is_model_saved']: # remove all keys of importance to next step
                       if keys in st.session_state:
                         del st.session_state[keys]
                     if train_model not in list(st.session_state.saved_results.keys()):
