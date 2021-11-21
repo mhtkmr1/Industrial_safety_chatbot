@@ -384,15 +384,21 @@ def main():
             and another column with Accident levels or categories
             first row = column headers
             ''')
+    uploaded_file1 = st.button('Press to use an example data from repo',key='uploaded_file1')
   with col13:
     st.header("OUTPUT AND STATUS")
+  
+  if uploaded_file1 is not None:
+    file_address='https://raw.githubusercontent.com/mhtkmr1/Industrial_safety_chatbot/main/Data%20Set%20-%20industrial_safety_and_health_database_with_accidents_description.csv'
+    st.session.df = pd.read_csv(url=file_address)
   if uploaded_file is not None:
     #if 'df' in st.session_state: del st.session_state[df] # Remove df if already exists, generally in case of new file uploaded
+    st.session_state.df = pd.read_csv(uploaded_file)
+  if 'df' in st.session_state:
     with col13:
       st.success('File uploaded successfully')
       st.write('FILENAME: ', uploaded_file.name)
       st.write('FILETYPE: ', uploaded_file.type)
-      st.session_state.df = pd.read_csv(uploaded_file)
       st.write('**Shape of original data: **',st.session_state.df.shape)
       #st.dataframe(st.session_state.df.head())
     col11_, col12_ = st.columns([1,5])
