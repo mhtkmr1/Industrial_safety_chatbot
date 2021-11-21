@@ -351,10 +351,10 @@ def prepare_trans_df(train_df,text,labels):
   dtf = pd.concat([train_df, google_translated.loc[train_df.index,clms]],axis=1)
   dtf.reset_index(inplace=True)
 
-  dtf1 = dtf[text,labels]].copy(deep=True)
+  dtf1 = dtf[[text,labels]].copy(deep=True)
   for lang in clms:
     new_df = pd.DataFrame()
-    new_df['Description'] = dtf[lang]
+    new_df[labels] = dtf[lang]
     new_df[labels] = dtf[labels]
     dtf1 = pd.concat([dtf1, new_df],ignore_index=True)
   return dtf1
