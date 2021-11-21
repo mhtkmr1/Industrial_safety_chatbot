@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import time
-import joblib
+#import joblib
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 import nltk                                         #Natural language processing tool-kit
 from nltk.corpus import stopwords                   #Stopwords corpus
@@ -341,7 +341,7 @@ def preprecess_chatbot(sentence,vector):
 
 # @st.cache(suppress_st_warning=True,allow_output_mutation=True)
 def load_model():
-  final_model = joblib.load('final_model.pkl')
+  #final_model = joblib.load('final_model.pkl')
   return final_model
 
 #st.write("_" * 30)
@@ -572,7 +572,7 @@ def main():
                       for keys in ['run_chatbot']: # remove all keys of importance to next step
                         if keys in st.session_state:
                           del st.session_state[keys]
-                      joblib.dump(st.session_state.current_model,'final_model.pkl')
+                      #joblib.dump(st.session_state.current_model,'final_model.pkl')
                       st.session_state.model_saved = 'yes'
                       #save_model(st.session_state.current_model)
                     if 'model_saved' in st.session_state:
@@ -588,8 +588,8 @@ def main():
                       with col101:
                         run_chatbot = st.button(label = 'Load model and Run the chatbot',key = 'run_chatbot')
                       if run_chatbot:
-                          st.session_state.final_model = load_model()
-
+                          #st.session_state.final_model = load_model()
+						  st.session_state.final_model = st.session_state.current_model
                       if 'run_chatbot' in st.session_state:
                         with col102:
                           description = st.text_area('Please enter the Accident description here', value='default_value',
