@@ -390,7 +390,7 @@ def main():
   
   if uploaded_file1 is not None:
     file_url='https://raw.githubusercontent.com/mhtkmr1/Industrial_safety_chatbot/main/Data%20Set%20-%20industrial_safety_and_health_database_with_accidents_description.csv'
-    st.session.df = pd.read_csv(file_url)
+    st.session_state.df = pd.read_csv(file_url)
   if uploaded_file is not None:
     #if 'df' in st.session_state: del st.session_state[df] # Remove df if already exists, generally in case of new file uploaded
     st.session_state.df = pd.read_csv(uploaded_file)
