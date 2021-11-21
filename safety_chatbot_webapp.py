@@ -559,7 +559,7 @@ def main():
                   c.reset_index(drop=True, inplace=True)
                   st.session_state.aug_train_text = c[st.session_state.text].copy(deep=True)
                   st.session_state.aug_train_labels = c[st.session_state.labels].copy(deep=True)
-                  st.session_state.y_train = lb.transform(st.session_state.aug_train_labels)
+                  st.session_state.y_train = st.session_state.lb.transform(st.session_state.aug_train_labels)
             if 'aug_train_text' in st.session_state:
               with col53:
                 st.success('Data augmentation is complete') 
