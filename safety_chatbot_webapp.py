@@ -354,9 +354,11 @@ def prepare_trans_df(train_df,text,labels):
   dtf1 = dtf[[text,labels]].copy(deep=True)
   for lang in clms:
     new_df = pd.DataFrame()
-    new_df[labels] = dtf[lang]
+    new_df[text] = dtf[lang]
     new_df[labels] = dtf[labels]
     dtf1 = pd.concat([dtf1, new_df],ignore_index=True)
+  #dtf1.drop_duplicates(subset=[text],inplace=True, ignore_index=True) # remove duplicate rows
+  # Function output contains some duplicates which can be removed later
   return dtf1
 
 def syn_augmentor(text_df,text,labels):
@@ -389,6 +391,8 @@ def syn_augmentor(text_df,text,labels):
   desc = pd.concat([text_df[text],pd.Series(augmented_sen)])
   acc_lvl = pd.concat([text_df[labels], pd.Series(level)])
   aug_df = pd.concat([desc,acc_lvl],axis=1)
+  aug_df.reset_index(drop=True, inplace=True)
+  aug_df.columns = [text,labels]
   return aug_df
 # @st.cache(suppress_st_warning=True,allow_output_mutation=True)
 #def load_model():
